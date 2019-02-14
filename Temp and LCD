@@ -1,6 +1,9 @@
 #include <math.h>         //loads the more advanced math functions
-#include <LiquidCrystal.h>
-LiquidCrystal lcd(0,1,8,9,10,11);
+#include <LiquidCrystal.h> //allows lcd to work
+
+const int rs = 12, en = 11, d4 = 5, d5 = 4, d6 = 3, d7 = 2;
+LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
+//last two lines obtained from LCD Hello World Code
 
 int ThermistorPin = A0;
 int Vo;
@@ -16,6 +19,8 @@ float c1 = 0.001129148, c2 = 0.000234125, c3 = 0.0000000876741;
 
 void setup() {
   Serial.begin(9600);
+  lcd.begin(16, 2);
+
 }
 
 void loop() {
@@ -40,5 +45,7 @@ void loop() {
    delay(5);
    lcd.print("Temp: ");
    lcd.print(Temp);
-   delay(800);
+   lcd.print((char)178); 
+   lcd.print("F");
+   delay(5);
 }
