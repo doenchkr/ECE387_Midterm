@@ -18,7 +18,7 @@ int ledRed = 8;
 // value of R1 on board
 float R1 = 10000; 
 
-float logR2, R2, Temp;
+float logR2, R2, Temp, TempC, TempF;
 
 //steinhart-hart coeficients for thermistor
 float c1 = 0.001129148, c2 = 0.000234125, c3 = 0.0000000876741;
@@ -37,8 +37,8 @@ void loop() {
   R2 = R1 * (1023.0 / (float)Vo - 1.0); //calculate resistance on thermistor
   logR2 = log(R2);
   Temp = (1.0 / (c1 + c2*logR2 + c3*logR2*logR2*logR2)); // temperature in Kelvin
-  Temp = Temp - 273.15; //convert Kelvin to Celcius
-  Temp = (Temp * 9.0)/ 5.0 + 32.0; //convert Celcius to Farenheit
+  TempC = Temp - 273.15; //convert Kelvin to Celcius
+  TempF = (TempC * 9.0)/ 5.0 + 32.0; //convert Celcius to Farenheit
 
   /*
   Serial.print("Temperature: "); 
@@ -47,16 +47,19 @@ void loop() {
   delay(1000);
   */
   
-  delay(1000);            //Wait one second before we do it again
+  delay(1000);            //Wait one second
   lcd.clear();
    delay(5);
    lcd.print("Temp: ");
-   lcd.print(Temp);
-   lcd.print((char)178); 
-   lcd.print("F");
+   lcd.print(TempF);
+   lcd.print((char)178); //degrees symbol
+   lcd.print("F    ");
+   lcd.print(TempC);
+   lcd.print((char)178); //degrees symbol
+   lcd.print("C");
    delay(5);
    
-  if(Temp>75 && Temp<80){//tells you its above 75 and warm
+  if(Temp>75){//tells you its above 75 and warm
     digitalWrite(ledRed, HIGH);
     digitalWrite(ledBlue, LOW);
     }
@@ -64,7 +67,7 @@ void loop() {
     digitalWrite(ledBlue, HIGH);
     digitalWrite(ledRed, LOW);
     }
- while(Temp>80){//blinks red to tell you its way too hot
+ /*while(Temp>80){//blinks red to tell you its way too hot
     digitalWrite(ledBlue,LOW);
     digitalWrite(ledRed,HIGH);
     delay(200);
@@ -83,5 +86,5 @@ void loop() {
   //i'm not happy with this while loop. i tried to do a for or while loop
   //and i have not had much success with it. i will try again later
 
-   
+   */
 }
