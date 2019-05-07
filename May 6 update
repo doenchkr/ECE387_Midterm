@@ -1,0 +1,132 @@
+
+#include <Servo.h>
+#include <SPI.h>
+#include <RFID.h>
+#include <LiquidCrystal.h>
+
+int greenLight = 31;
+int redLight = 33;
+
+int checkButton = 11;
+int outButton = 12;
+
+
+LiquidCrystal lcd(48, 46, 44, 42, 40, 38);
+
+RFID rfid(53, 5);
+
+byte kart[5] = {136,4,83,125,162};
+Servo myservo;
+boolean card;
+
+void setup()
+{
+  lcd.begin(16, 2);
+  Serial.begin(9600);
+  SPI.begin();
+  rfid.init();
+  myservo.attach(3);
+  myservo.write(0);
+
+  pinMode(greenLight, OUTPUT);
+  pinMode(redLight, OUTPUT);
+
+  pinMode(checkButton, INPUT);
+  pinMode(outButton, INPUT);
+  int checkButtonState = 0;
+  int outButtonState = 0;
+  
+  digitalWrite(greenLight, HIGH);
+  digitalWrite(redLight, LOW);
+
+
+//lcd.print("Welcome!");
+
+}
+
+void loop()
+{
+
+  if (rfid.isCard())
+  {
+
+
+    if (rfid.readCardSerial())
+    {
+      
+      Serial.print("Found ID: ");
+      Serial.print(rfid.serNum[0]);
+      Serial.print(",");
+      Serial.print(rfid.serNum[1]);
+      Serial.print(",");
+      Serial.print(rfid.serNum[2]);
+      Serial.print(",");
+      Serial.print(rfid.serNum[3]);
+      Serial.print(",");
+      Serial.println(rfid.serNum[4]);
+
+    }
+    for (int i = 1; i < 5; i++)
+    {
+      if (rfid.serNum[0] == kart[0] && rfid.serNum[1] == kart[1] && rfid.serNum[2] == kart[2] && rfid.serNum[3] == kart[3] && rfid.serNum[4] == kart[4])
+      {
+        card = true;
+      }
+      else {
+        card = false;
+      }
+    }
+    if (card == true)
+    {
+
+      if(digitalRead(greenLight) == HIGH){
+      Serial.println("Green was on, turning it off");      
+      myservo.write(180);
+      delay(5000);
+      myservo.write(0);
+      
+      
+      delay(100);
+      digitalWrite(greenLight, LOW); //green
+      delay(100);
+      digitalWrite(redLight, HIGH);  //red
+    }
+      else if (digitalRead(redLight) == HIGH){
+        
+      Serial.println("Red was on, turning it off");
+      
+//      digitalWrite(redLight , HIGH); //red
+//      delay(100);
+//      digitalWrite(redLight , LOW); //red
+//      delay(100);
+//      digitalWrite(redLight , HIGH); //red
+//      delay(100);
+//      digitalWrite(redLight , LOW); //red
+//      delay(100);
+      
+      myservo.write(180);
+      delay(5000);
+      myservo.write(0);
+
+      digitalWrite(greenLight, HIGH); //green
+      delay(100);
+      digitalWrite(redLight , LOW); //red
+      delay(100);
+    }
+    
+    }
+   /* else if (card == true && greenLight == LOW && redLight ==HIGH){
+      myservo.write(180);
+      delay(5000);
+      myservo.write(0);
+      digitalWrite(greenLight, HIGH);
+      digitalWrite(redLight, LOW);
+    } */
+    else
+    {
+      Serial.println("Wrong Card");
+
+    }
+    rfid.halt();
+  }
+}
