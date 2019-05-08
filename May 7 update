@@ -26,15 +26,15 @@ void setup()
   SPI.begin();
   rfid.init();
   myservo.attach(3);
-  myservo.write(0);
+  myservo.write(1);
 
   pinMode(greenLight, OUTPUT);
   pinMode(redLight, OUTPUT);
 
   pinMode(checkButton, INPUT);
   pinMode(outButton, INPUT);
-  int checkButtonState = 0;
-  int outButtonState = 0;
+  char checkButtonState;
+  char outButtonState;
   
   digitalWrite(greenLight, HIGH);
   digitalWrite(redLight, LOW);
@@ -94,24 +94,54 @@ void loop()
       else if (digitalRead(redLight) == HIGH){
         
       Serial.println("Red was on, turning it off");
-      
-//      digitalWrite(redLight , HIGH); //red
-//      delay(100);
-//      digitalWrite(redLight , LOW); //red
-//      delay(100);
-//      digitalWrite(redLight , HIGH); //red
-//      delay(100);
-//      digitalWrite(redLight , LOW); //red
-//      delay(100);
-      
-      myservo.write(180);
-      delay(5000);
-      myservo.write(0);
+     
+      char checkButtonState;
+      char outButtonState;
+      while(digitalRead(checkButton) == LOW || digitalRead(outButton) == LOW){
+        
+        digitalWrite(redLight , HIGH); //red
+        delay(100);
+        digitalWrite(redLight , LOW); //red
+        delay(100);
+        digitalWrite(redLight , HIGH); //red
+        delay(100);
+        digitalWrite(redLight , LOW); //red
+        delay(100);
+        
+        if(digitalRead(checkButton) == HIGH){
+         myservo.write(180);
+         delay(5000);
+         myservo.write(0); 
 
-      digitalWrite(greenLight, HIGH); //green
-      delay(100);
-      digitalWrite(redLight , LOW); //red
-      delay(100);
+         delay(100);
+         digitalWrite(greenLight, LOW); //green
+         delay(100);
+         digitalWrite(redLight, HIGH);  //red
+      
+         break;
+        }
+        else if (digitalRead(outButton) == HIGH){
+          myservo.write(180);
+          delay(5000);
+          myservo.write(0);
+
+          digitalWrite(greenLight, HIGH); //green
+          delay(100);
+          digitalWrite(redLight , LOW); //red
+          delay(100);
+          break;
+        }
+      }
+      
+      
+//      myservo.write(180);
+//      delay(5000);
+//      myservo.write(0);
+//
+//      digitalWrite(greenLight, HIGH); //green
+//      delay(100);
+//      digitalWrite(redLight , LOW); //red
+//      delay(100);
     }
     
     }
